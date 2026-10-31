@@ -1,0 +1,8 @@
+gotsta1.online {
+	encode zstd gzip
+	reverse_proxy admin-frontend:8080
+}
+
+www.gotsta1.online {
+	redir https://gotsta1.online{uri} permanent
+}

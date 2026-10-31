@@ -1,0 +1,8 @@
+[Unit]
+Description=Back up Tomas Club PostgreSQL
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/tomas-club/deploy/backup.sh

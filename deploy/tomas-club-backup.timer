@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Tomas Club database backup
+
+[Timer]
+OnCalendar=*-*-* 02:30:00
+Persistent=true
+Unit=tomas-club-backup.service
+
+[Install]
+WantedBy=timers.target

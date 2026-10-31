@@ -1,0 +1,58 @@
+name: tomas-club
+x-backend: &backend
+  build: ./backend
+  env_file: .env
+  environment: &environment
+    DATABASE_URL: postgres://club:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/club?sslmode=disable
+  restart: unless-stopped
+  read_only: true
+  tmpfs: [/tmp]
+  security_opt: [no-new-privileges:true]
+  depends_on:
+    postgres:
+      condition: service_healthy
+    migrate:
+      condition: service_completed_successfully
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: club
+      POSTGRES_USER: club
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes: [postgres_data:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U club -d club']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+  migrate:
+    build: ./backend
+    entrypoint: [/app/migrate]
+    environment:
+      <<: *environment
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+  backend:
+    <<: *backend
+    environment:
+      <<: *environment
+      WORKER_ENABLED: "false"
+  worker:
+    <<: *backend
+    environment:
+      <<: *environment
+      WORKER_ENABLED: "true"
+  admin-frontend:
+    build: ./frontend
+    ports:
+      - '127.0.0.1:${PORT:-8080}:8080'
+      - '127.0.0.1:${WEBHOOK_PORT:-8098}:8081'
+    depends_on: [backend]
+    restart: unless-stopped
+    security_opt: [no-new-privileges:true]
+volumes:
+  postgres_data:

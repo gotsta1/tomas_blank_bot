@@ -1,0 +1,14 @@
+name: tomas-club-test
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: club_test
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test-local-only
+    ports: ['127.0.0.1:55438:5432']
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U test -d club_test']
+      interval: 2s
+      timeout: 3s
+      retries: 30

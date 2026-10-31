@@ -26,7 +26,26 @@ go.work.sum
 
 # env file
 .env
+.env.*
+!.env.example
+
+# Private keys and local data exports
+*.pem
+*.key
+*.p12
+*.pfx
+*.dump
+*.sqlite
+*.sqlite3
+*.db
+*.sql.gz
 
 # Editor/IDE
 # .idea/
 # .vscode/
+
+# Build output
+frontend/node_modules/
+frontend/dist/
+frontend/*.tsbuildinfo
+backend/bin/
